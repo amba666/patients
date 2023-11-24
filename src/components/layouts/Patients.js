@@ -1,59 +1,49 @@
-import React, {Component, Fragment} from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
- import { getPatients} from "../../actions/patients";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
+const Patients = () => {
+    const [clients, setClients] = useState([]);
 
-export  class Patients extends Component{
-    static propTypes = {
-        patients: PropTypes.array.isRequired,
-        getPatients: PropTypes.func.isRequired,
+    useEffect(() => {
+        fetchData();
+    }, []);
 
+    const fetchData = async () => {
+        try {
+            const response = await axios.get('http://127.0.0.1:8000/api/client/');
+            setClients(response.data);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    componentDidMount() {
-        this.props.getPatients();
-    }
-
-    render(){
-
-        return(
-            <Fragment>
-                <h2 className="font-bold">Patients</h2>
-                <table className="table-auto w-full border-collapse">
-                    <thead>
-                    <tr>
-                        <th className="border px-4 py-2">ID</th>
-                        <th className="border px-4 py-2">Name</th>
-                        <th className="border px-4 py-2">Age</th>
-                        <th className="border px-4 py-2">Sex</th>
-                        <th className="border px-4 py-2">Email</th>
-                        <th className="border px-4 py-2">Problem</th>
-                        <th className="border px-4 py-2" />
+    return (
+        <div>
+            <h2 className="font-bold">Clients List</h2>
+            <table className="table-fixed w-full">
+                <thead>
+                <tr>
+                    <th className="border px-2 py-1">ID</th>
+                    <th className="border px-2 py-1">Name</th>
+                    <th className="border px-2 py-1">Mobile</th>
+                    <th className="border px-2 py-1">Age</th>
+                    <th className="border px-2 py-1">Sex</th>
+                </tr>
+                </thead>
+                <tbody>
+                {clients.map((client) => (
+                    <tr className="border" key={client.id}>
+                        <td className="border px-2 py-1">{client.id}</td>
+                        <td className="border px-2 py-1">{client.name}</td>
+                        <td className="border px-2 py-1">{client.mobile}</td>
+                        <td className="border px-2 py-1">{client.age}</td>
+                        <td className="border px-2 py-1">{client.sex}</td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    {this.props.patients.map((patient) => (
-                        <tr key={patient.id} className="border">
-                            <td className="border px-4 py-2">{patient.id}</td>
-                            <td className="border px-4 py-2">{patient.name}</td>
-                            <td className="border px-4 py-2">{patient.age}</td>
-                            <td className="border px-4 py-2">{patient.sex}</td>
-                            <td className="border px-4 py-2">{patient.email}</td>
-                            <td className="border px-4 py-2">{patient.problem}</td>
-                            <td className="border px-4 py-2" />
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            </Fragment>
-        )
-    }
-}
+                ))}
+                </tbody>
+            </table>
+        </div>
+    );
+};
 
-const mapStateToProps= state =>(
-    {
-        patients: state.patients.patients
-    }
-);
-export default connect(mapStateToProps, { getPatients })(Patients);
+export default Patients;

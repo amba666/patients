@@ -16,21 +16,19 @@ export  const getPatients = () =>  dispatch =>  {
 };
 
 
-export const addPatient = (patient) => (dispatch) => {
-    axios.post("", patient)
-        .then((res) => {
+export const addPatient = (patient) => dispatch => {
+ console.log("Adding patient:", patient);
 
+    axios
+        .post("/api/client/", patient)
+        .then((res) => {
             dispatch({
                 type: ADD_PATIENT,
                 payload: res.data,
             });
         })
-        .catch((err) => {
-
-            console.log(err);
-        });
-
+        .catch(err => console.log(err));
 
 };
 
-export default addPatient;
+export  default  addPatient;

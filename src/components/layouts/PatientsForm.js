@@ -1,117 +1,114 @@
-import React, { Component, useState } from "react";
-import { connect } from "react-redux";
-import { addPatient } from "../../actions/patients";
-import PropTypes from "prop-types";
+import React, {Fragment, useState} from 'react';
+import axios from "axios";
+import Patients from "./Patients";
+// import Patients from "./Patients";
+// import {render} from "react-dom";
 
-export class PatientsForm extends Component {
-    state = {
+function PatientsForm(){
+
+    const url = "http://127.0.0.1:8000/api/client/";
+    const [data, setData] = useState({
         name: "",
+        client_id: "",
+        mobile: "",
         age: "",
         sex: "",
-        email: "",
-        problem: "",
-    };
+    });
 
-    // const [formValue,setFormValue] = useState();
-
-    static propTypes = {
-        addPatients:  PropTypes.func.isRequired
+    function submit(e) {
+        e.preventDefault();
+        axios
+            .post(url, {
+                name: data.name,
+                client_id: data.client_id,
+                mobile: data.mobile,
+                age: data.age,
+                sex: data.sex,
+            })
+            .then((res) => {
+                console.log(res.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
-    onChange = (e) => this.setState({ [e.target.name]: e.target.value });
-
-    onSubmit = (e) => {
-        e.preventDefault();
-
-        const { name, age, sex, email, problem } = this.state;
-
-        const patient = { name, age, sex, email, problem };
-
-        addPatient(patient);
-
-
-        this.setState({
-            name: "",
-            age: "",
-            sex: "",
-            email: "",
-            message: "",
-        });
-    };
-
-    render() {
-        const { name, age, sex, email, message } = this.state;
-
-        return (
+    function handle(e) {
+        const newData = { ...data };
+        newData[e.target.id] = e.target.value;
+        setData(newData);
+    }
+        return(
+        <Fragment>
             <div className="card p-4 mt-4 mb-4">
                 <h2 className="font-bold">Add Patient Form</h2>
-                <form onSubmit={this.onSubmit}>
+                <form onSubmit={(e)=> submit(e)}>
                     <div className="mb-4">
-                        <label className="block">Name</label>
+                        <label className="block">Client Name</label>
                         <input
                             type="text"
                             className="w-full border rounded px-3 py-2"
-                            name="name"
-                            onChange={this.onChange}
-                            value={name}
-                        />
+                            name="name" id="name" onChange={(e)=>handle(e)} value={data.name}/>
                     </div>
+
+                    <div className="mb-4">
+                        <label className="block">Client Id</label>
+                        <input
+                            type="number"
+                            className="w-full border rounded px-3 py-2"
+                            name="client_id" id="client_id" onChange={(e)=>handle(e)} value={data.client_id}/>
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block">Phone</label>
+                        <input
+                            type="tel"
+                            className="w-full border rounded px-3 py-2"
+                            name="mobile" id="mobile" onChange={(e)=>handle(e)} value={data.mobile}/>
+                    </div>
+
 
                     <div className="mb-4">
                         <label className="block">Age</label>
                         <input
                             type="text"
                             className="w-full border rounded px-3 py-2"
-                            name="age"
-                            onChange={this.onChange}
-                            value={age}
-                        />
+                            name="age" id="age" onChange={(e)=>handle(e)} value={data.age}/>
                     </div>
+
 
                     <div className="mb-4">
                         <label className="block">Sex</label>
                         <input
                             type="text"
                             className="w-full border rounded px-3 py-2"
-                            name="sex"
-                            onChange={this.onChange}
-                            value={sex}
-                        />
+                            name="sex" id="sex" onChange={(e)=>handle(e)} value={data.sex}/>
                     </div>
 
-                    <div className="mb-4">
-                        <label className="block">Email</label>
-                        <input
-                            type="email"
-                            className="w-full border rounded px-3 py-2"
-                            name="email"
-                            onChange={this.onChange}
-                            value={email}
-                        />
-                    </div>
 
-                    <div className="mb-4">
-                        <label className="block">Problem</label>
-                        <textarea
-                            className="w-full border rounded px-3 py-2"
-                            name="message"
-                            onChange={this.onChange}
-                            value={message}
-                        ></textarea>
-                    </div>
+
+
 
                     <div className="mb-4">
                         <button
                             type="submit"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        >
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                             Submit
                         </button>
                     </div>
+
+
                 </form>
-            </div>
-        );
-    }
+                </div>
+
+            <Patients />
+        </Fragment>
+
+        )
+
+
 }
 
-export default connect(null, { addPatient })(PatientsForm);
+
+
+export default PatientsForm;
